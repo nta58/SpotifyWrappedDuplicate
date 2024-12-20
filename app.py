@@ -8,8 +8,8 @@ TOKEN_INFO = "token_info"
 SHORT_TERM = "short_term"
 MEDIUM_TERM = "medium_term"
 LONG_TERM = "long_term"
-CLIENT_ID = "client_id"
-CLIENT_SECRET = "client_secret"
+CLIENT_ID = "b3ba4659e52c42c98764656a6c6a17a6"
+CLIENT_SECRET = "43f18a3c9d08480887e77feadbc5519c"
 
 def create_spotify_oauth(user_session=None):
     cache_path = None if user_session is None else f".cache-{user_session}"
