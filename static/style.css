@@ -48,3 +48,22 @@ body {
 h1, h2 {
     color: #1DB954;  /* Spotify green */
 }
+
+.logout-container {
+    margin: 20px 0;
+}
+
+.logout-btn {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: #1DB954;  /* Spotify green */
+    color: white;
+    text-decoration: none;
+    border-radius: 20px;
+    font-weight: bold;
+    transition: background-color 0.3s;
+}
+
+.logout-btn:hover {
+    background-color: #1ed760;
+}
