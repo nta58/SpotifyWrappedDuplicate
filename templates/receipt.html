@@ -6,6 +6,11 @@
 </head>
 <body>
     <center>
+        <div class="logout-container">
+            <p>Welcome, {{ username }}</p>
+            <a href="{{ url_for('logout') }}" class="logout-btn">Logout</a>
+        </div>
+        
         <h1>Spotify Wrapped Duplicate</h1>
         <h2>Top Track Generator</h2>
         
@@ -55,6 +60,9 @@
                     {% endfor %}
                 </div>
             {% endif %}
+        </div>
+        <div class="logout-container" style="margin-top: 20px;">
+            <a href="{{ url_for('logout') }}" class="logout-btn">Logout</a>
         </div>
     </center>
 </body>

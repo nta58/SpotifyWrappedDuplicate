@@ -3,6 +3,7 @@ import spotipy
 from spotipy.oauth2 import SpotifyOAuth
 import time
 import uuid
+import os
 
 #DEFINING CONSTS
 TOKEN_INFO = "token_info"
@@ -36,37 +37,53 @@ def create_spotify_oauth():
         client_secret=CLIENT_SECRET,
         redirect_uri=url_for("redirectPage", _external=True),
         scope="user-top-read user-library-read",
-        show_dialog=True  # Force display of Spotify auth dialog
+        show_dialog=True,
+        cache_handler=None  # Disable caching completely
     )
+        
+def clear_session_cache():
+    if 'uuid' in session:
+        cache_path = f".cache-{session['uuid']}"
+        if os.path.exists(cache_path):
+            os.remove(cache_path)
+    session.clear()
 
+    
 @app.route("/")
 def index():
-    session.clear()  # Clear any existing session
+    clear_session_cache()  # Use this instead of session.clear()
+    session['uuid'] = str(uuid.uuid4())
     return render_template('index.html', title='Welcome')
 
 @app.route("/login")
 def login():
-    session.clear()  # Clear session before new login
+    clear_session_cache()  # Use this instead of session.clear()
+    session['uuid'] = str(uuid.uuid4())
     spotify_oauth = create_spotify_oauth()
     auth_url = spotify_oauth.get_authorize_url()
     return redirect(auth_url)
 
 @app.route('/redirectPage')
 def redirectPage():
-    session.clear()  # Clear any old session data
-    spotify_oauth = create_spotify_oauth()
-    session['uuid'] = str(uuid.uuid4())
     code = request.args.get('code')
+    if not code:
+        return redirect(url_for('login', _external=True))
+        
+    spotify_oauth = create_spotify_oauth()
     token_info = spotify_oauth.get_access_token(code)
     session[TOKEN_INFO] = token_info
+    session['uuid'] = str(uuid.uuid4())
     return redirect(url_for("receipt", _external=True))
 
 @app.route('/receipt')
 def receipt():
+    if 'uuid' not in session:
+        return redirect(url_for('login', _external=True))
+    
     token_info = get_token()
     if not token_info:
         return redirect(url_for('login', _external=True))
-    
+        
     try:
         sp = spotipy.Spotify(auth=token_info['access_token'])
         
@@ -100,12 +117,12 @@ def receipt():
                              long_term=long_term)
     except Exception as e:
         print(f"Error: {e}")
-        session.clear()
+        clear_session_cache()
         return redirect(url_for('login', _external=True))
 
 @app.route('/logout')
 def logout():
-    session.clear()
+    clear_session_cache()  # Use clear_session_cache instead of session.clear()
     return redirect(url_for('index'))
 
 if __name__ == '__main__':
