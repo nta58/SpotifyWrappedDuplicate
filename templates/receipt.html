@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <title>Document</title>
+</head>
+<body>
+    <center>
+        <h1>Spotify Wrapped Duplicate</h1>
+        <h2>Top Track Generator</h2>
+        
+        <!-- Last 4 weeks -->
+        <div class="receipt">
+            <h3>Last 4 Weeks</h3>
+            {% if short_term %}
+                <div class="receipt-items">
+                    {% for song in short_term['items'] %}
+                    <div class="receipt-item">
+                        <span class="item-number">{{ loop.index }}.</span>
+                        <span class="song-name">{{ song.name }}</span>
+                        <span class="artist-name">- {{ song.artists[0].name }}</span>
+                    </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
+
+        <!-- Last 6 months -->
+        <div class="receipt">
+            <h3>Last 6 Months</h3>
+            {% if medium_term %}
+                <div class="receipt-items">
+                    {% for song in medium_term['items'] %}
+                    <div class="receipt-item">
+                        <span class="item-number">{{ loop.index }}.</span>
+                        <span class="song-name">{{ song.name }}</span>
+                        <span class="artist-name">- {{ song.artists[0].name }}</span>
+                    </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
+
+        <!-- All Time -->
+        <div class="receipt">
+            <h3>All Time Favorites</h3>
+            {% if long_term %}
+                <div class="receipt-items">
+                    {% for song in long_term['items'] %}
+                    <div class="receipt-item">
+                        <span class="item-number">{{ loop.index }}.</span>
+                        <span class="song-name">{{ song.name }}</span>
+                        <span class="artist-name">- {{ song.artists[0].name }}</span>
+                    </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
+    </center>
+</body>
+</html>
