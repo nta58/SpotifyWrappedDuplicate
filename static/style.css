@@ -1,69 +1,147 @@
-body {
-    font-family: 'Circular', monospace;
-    background-color: #f5f5f5;
+:root {
+    --spotify-green: #1DB954;
+    --spotify-black: #191414;
+    --spotify-white: #FFFFFF;
+    --spotify-grey: #282828;
+}
+
+* {
     margin: 0;
-    padding: 20px;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    background-color: var(--spotify-black);
+    color: var(--spotify-white);
+    line-height: 1.6;
+}
+
+.container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+.welcome-section {
+    text-align: center;
+    padding: 4rem 0;
+}
+
+.welcome-section h1 {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+}
+
+.welcome-section p {
+    font-size: 1.2rem;
+    margin-bottom: 2rem;
+    opacity: 0.8;
+}
+
+.spotify-button {
+    background-color: var(--spotify-green);
+    color: var(--spotify-white);
+    border: none;
+    padding: 1rem 2rem;
+    border-radius: 500px;
+    font-size: 1.1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: transform 0.2s ease, background-color 0.2s ease;
+}
+
+.spotify-button:hover {
+    transform: scale(1.05);
+    background-color: #1ed760;
+}
+
+.profile-header {
+    text-align: center;
+    margin-bottom: 3rem;
 }
 
 .receipt {
-    background-color: white;
-    padding: 20px;
-    max-width: 400px;
-    margin: 20px auto;
-    border: 1px solid #ddd;
-    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    background-color: var(--spotify-grey);
+    border-radius: 10px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 .receipt h3 {
-    text-align: center;
-    border-bottom: 2px dotted #000;
-    padding-bottom: 10px;
+    color: var(--spotify-green);
+    margin-bottom: 1rem;
+    font-size: 1.5rem;
 }
 
 .receipt-items {
-    text-align: left;
-    margin: 20px 0;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
 }
 
 .receipt-item {
-    margin: 10px 0;
-    padding: 5px 0;
-    border-bottom: 1px dotted #ccc;
+    display: flex;
+    align-items: center;
+    padding: 0.8rem;
+    background-color: rgba(255, 255, 255, 0.05);
+    border-radius: 6px;
+    transition: transform 0.2s ease;
+}
+
+.receipt-item:hover {
+    transform: translateX(10px);
+    background-color: rgba(255, 255, 255, 0.1);
 }
 
 .item-number {
-    margin-right: 10px;
+    font-size: 1.2rem;
     font-weight: bold;
+    color: var(--spotify-green);
+    margin-right: 1rem;
+    min-width: 30px;
+}
+
+.song-info {
+    display: flex;
+    flex-direction: column;
 }
 
 .song-name {
     font-weight: bold;
+    font-size: 1.1rem;
 }
 
 .artist-name {
-    color: #666;
-    margin-left: 5px;
-}
-
-h1, h2 {
-    color: #1DB954;  /* Spotify green */
+    font-size: 0.9rem;
+    opacity: 0.7;
 }
 
 .logout-container {
-    margin: 20px 0;
+    text-align: center;
+    margin-top: 3rem;
 }
 
 .logout-btn {
-    display: inline-block;
-    padding: 10px 20px;
-    background-color: #1DB954;  /* Spotify green */
-    color: white;
+    background-color: transparent;
+    color: var(--spotify-white);
+    border: 2px solid var(--spotify-white);
+    padding: 0.8rem 2rem;
+    border-radius: 500px;
     text-decoration: none;
-    border-radius: 20px;
     font-weight: bold;
-    transition: background-color 0.3s;
+    transition: all 0.2s ease;
 }
 
 .logout-btn:hover {
-    background-color: #1ed760;
+    background-color: var(--spotify-white);
+    color: var(--spotify-black);
 }
+
+.alert {
+    padding: 1rem;
+    margin-bottom: 1rem;
+    border-radius: 6px;
+    text
