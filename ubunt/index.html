@@ -1,28 +1,14 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-    <title>{{ title }}</title>
-</head>
-<body>
-    <div class="container">
-        {% with messages = get_flashed_messages(with_categories=true) %}
-            {% if messages %}
-                {% for category, message in messages %}
-                    <div class="alert alert-{{ category }}">{{ message }}</div>
-                {% endfor %}
-            {% endif %}
-        {% endwith %}
-        
-        <div class="welcome-section">
-            <h1>Spotify Wrapped Duplicate</h1>
-            <p>Discover your top tracks across different time periods</p>
-            <button class="spotify-button" onclick="location.href = '/login';">
-                Log in with Spotify
-            </button>
-        </div>
-    </div>
-</body>
+  <html lang="en">
+  <head>
+      <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <title>Document</title>
+  </head>
+  <body>
+    <center>
+      <h1>Spotify Wrapped Duplicate</h1>
+
+      <button class="spotifyButton" onclick="location.href = '/login';" >Log in with Spotify</button>
+    </center>
+  </body>
 </html>

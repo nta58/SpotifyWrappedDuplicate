@@ -18,29 +18,7 @@ body {
     line-height: 1.6;
 }
 
-.container {
-    max-width: 800px;
-    margin: 0 auto;
-    padding: 2rem;
-}
-
-.welcome-section {
-    text-align: center;
-    padding: 4rem 0;
-}
-
-.welcome-section h1 {
-    font-size: 3rem;
-    margin-bottom: 1rem;
-}
-
-.welcome-section p {
-    font-size: 1.2rem;
-    margin-bottom: 2rem;
-    opacity: 0.8;
-}
-
-.spotify-button {
+.spotifyButton {
     background-color: var(--spotify-green);
     color: var(--spotify-white);
     border: none;
@@ -50,23 +28,31 @@ body {
     font-weight: bold;
     cursor: pointer;
     transition: transform 0.2s ease, background-color 0.2s ease;
+    margin-top: 2rem;
 }
 
-.spotify-button:hover {
+.spotifyButton:hover {
     transform: scale(1.05);
     background-color: #1ed760;
 }
 
-.profile-header {
-    text-align: center;
-    margin-bottom: 3rem;
+h1 {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    margin-top: 2rem;
+}
+
+h2 {
+    margin-bottom: 2rem;
+    color: var(--spotify-green);
 }
 
 .receipt {
     background-color: var(--spotify-grey);
     border-radius: 10px;
     padding: 1.5rem;
-    margin-bottom: 2rem;
+    margin: 2rem auto;
+    max-width: 800px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
@@ -101,30 +87,19 @@ body {
     font-weight: bold;
     color: var(--spotify-green);
     margin-right: 1rem;
-    min-width: 30px;
-}
-
-.song-info {
-    display: flex;
-    flex-direction: column;
 }
 
 .song-name {
     font-weight: bold;
-    font-size: 1.1rem;
+    margin-right: 0.5rem;
 }
 
 .artist-name {
-    font-size: 0.9rem;
-    opacity: 0.7;
-}
-
-.logout-container {
-    text-align: center;
-    margin-top: 3rem;
+    color: rgba(255, 255, 255, 0.7);
 }
 
 .logout-btn {
+    display: inline-block;
     background-color: transparent;
     color: var(--spotify-white);
     border: 2px solid var(--spotify-white);
@@ -133,6 +108,7 @@ body {
     text-decoration: none;
     font-weight: bold;
     transition: all 0.2s ease;
+    margin-top: 1rem;
 }
 
 .logout-btn:hover {
@@ -140,8 +116,24 @@ body {
     color: var(--spotify-black);
 }
 
+.logout-container {
+    margin: 2rem 0;
+}
+
 .alert {
     padding: 1rem;
-    margin-bottom: 1rem;
+    margin: 1rem auto;
     border-radius: 6px;
-    text
+    max-width: 800px;
+    text-align: center;
+}
+
+.alert-error {
+    background-color: #ff4444;
+    color: white;
+}
+
+.alert-success {
+    background-color: var(--spotify-green);
+    color: white;
+}

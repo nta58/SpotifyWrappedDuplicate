@@ -1,25 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-    <title>{{ title }}</title>
+    <title>Document</title>
 </head>
 <body>
-    <div class="container">
-        {% with messages = get_flashed_messages(with_categories=true) %}
-            {% if messages %}
-                {% for category, message in messages %}
-                    <div class="alert alert-{{ category }}">{{ message }}</div>
-                {% endfor %}
-            {% endif %}
-        {% endwith %}
-        
-        <header class="profile-header">
-            <h1>Spotify Wrapped Duplicate</h1>
-            <h2>Welcome, {{ username }}!</h2>
-        </header>
+    <center>        
+        <h1>Spotify Wrapped Duplicate</h1>
+        <h2>Top Track Generator</h2>
         
         <!-- Last 4 weeks -->
         <div class="receipt">
@@ -28,11 +16,9 @@
                 <div class="receipt-items">
                     {% for song in short_term['items'] %}
                     <div class="receipt-item">
-                        <span class="item-number">{{ loop.index }}</span>
-                        <div class="song-info">
-                            <span class="song-name">{{ song.name }}</span>
-                            <span class="artist-name">{{ song.artists[0].name }}</span>
-                        </div>
+                        <span class="item-number">{{ loop.index }}.</span>
+                        <span class="song-name">{{ song.name }}</span>
+                        <span class="artist-name">- {{ song.artists[0].name }}</span>
                     </div>
                     {% endfor %}
                 </div>
@@ -46,11 +32,9 @@
                 <div class="receipt-items">
                     {% for song in medium_term['items'] %}
                     <div class="receipt-item">
-                        <span class="item-number">{{ loop.index }}</span>
-                        <div class="song-info">
-                            <span class="song-name">{{ song.name }}</span>
-                            <span class="artist-name">{{ song.artists[0].name }}</span>
-                        </div>
+                        <span class="item-number">{{ loop.index }}.</span>
+                        <span class="song-name">{{ song.name }}</span>
+                        <span class="artist-name">- {{ song.artists[0].name }}</span>
                     </div>
                     {% endfor %}
                 </div>
@@ -64,20 +48,17 @@
                 <div class="receipt-items">
                     {% for song in long_term['items'] %}
                     <div class="receipt-item">
-                        <span class="item-number">{{ loop.index }}</span>
-                        <div class="song-info">
-                            <span class="song-name">{{ song.name }}</span>
-                            <span class="artist-name">{{ song.artists[0].name }}</span>
-                        </div>
+                        <span class="item-number">{{ loop.index }}.</span>
+                        <span class="song-name">{{ song.name }}</span>
+                        <span class="artist-name">- {{ song.artists[0].name }}</span>
                     </div>
                     {% endfor %}
                 </div>
             {% endif %}
         </div>
-
-        <div class="logout-container">
+        <div class="logout-container" style="margin-top: 20px;">
             <a href="{{ url_for('logout') }}" class="logout-btn">Logout</a>
         </div>
-    </div>
+    </center>
 </body>
 </html>
