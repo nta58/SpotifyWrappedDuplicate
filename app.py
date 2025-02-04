@@ -1,48 +1,58 @@
-from flask import Flask, request, url_for, session, redirect, render_template, flash
+from flask import Flask, request, url_for, session, redirect, render_template
 import spotipy
 from spotipy.oauth2 import SpotifyOAuth
 import time
 import uuid
 import os
-from dotenv import load_dotenv
+import logging
 
-# Load environment variables
-load_dotenv()
+# Set up logging
+logging.basicConfig(level=logging.DEBUG)
+logger = logging.getLogger(__name__)
 
-# DEFINING CONSTS
+#DEFINING CONSTS
 TOKEN_INFO = "token_info"
 SHORT_TERM = "short_term"
 MEDIUM_TERM = "medium_term"
 LONG_TERM = "long_term"
+CLIENT_ID = "b3ba4659e52c42c98764656a6c6a17a6"
+CLIENT_SECRET = "43f18a3c9d08480887e77feadbc5519c"
 
 app = Flask(__name__)
-app.secret_key = os.environ.get('SECRET_KEY', os.urandom(24))
-app.config['SESSION_COOKIE_SECURE'] = True
-app.config['SESSION_COOKIE_HTTPONLY'] = True
+app.secret_key = os.environ.get('SECRET_KEY', 'your-secret-key-here')
+
+@app.route("/")
+def index():
+    logger.debug("Accessing index route")
+    try:
+        clear_session_cache()
+        session['uuid'] = str(uuid.uuid4())
+        logger.debug("Session UUID set")
+        return render_template('index.html', title='Welcome')
+    except Exception as e:
+        logger.error(f"Error in index route: {str(e)}")
+        return str(e), 500
 
 def get_token():
-    try:
-        token_info = session.get(TOKEN_INFO, None)
-        if not token_info:
-            return None
-
-        # Check if token has expired
-        now = int(time.time())
-        is_expired = token_info['expires_at'] - now < 60
-        if is_expired:
-            spotify_oauth = create_spotify_oauth()
-            token_info = spotify_oauth.refresh_access_token(token_info['refresh_token'])
-            session[TOKEN_INFO] = token_info
-
-        return token_info
-    except Exception as e:
-        app.logger.error(f"Error getting token: {e}")
+    logger.debug("Getting token")
+    token_info = session.get(TOKEN_INFO, None)
+    if not token_info:
         return None
 
+    now = int(time.time())
+    is_expired = token_info['expires_at'] - now < 60
+    if is_expired:
+        spotify_oauth = create_spotify_oauth()
+        token_info = spotify_oauth.refresh_access_token(token_info['refresh_token'])
+        session[TOKEN_INFO] = token_info
+
+    return token_info
+
 def create_spotify_oauth():
+    logger.debug("Creating Spotify OAuth")
     return SpotifyOAuth(
-        client_id=os.environ.get('SPOTIFY_CLIENT_ID'),
-        client_secret=os.environ.get('SPOTIFY_CLIENT_SECRET'),
+        client_id=CLIENT_ID,
+        client_secret=CLIENT_SECRET,
         redirect_uri=url_for("redirectPage", _external=True),
         scope="user-top-read user-library-read",
         show_dialog=True,
@@ -50,23 +60,16 @@ def create_spotify_oauth():
     )
         
 def clear_session_cache():
-    try:
-        if 'uuid' in session:
-            cache_path = f".cache-{session['uuid']}"
-            if os.path.exists(cache_path):
-                os.remove(cache_path)
-        session.clear()
-    except Exception as e:
-        app.logger.error(f"Error clearing session cache: {e}")
-
-@app.route("/")
-def index():
-    clear_session_cache()
-    session['uuid'] = str(uuid.uuid4())
-    return render_template('index.html', title='Welcome to Spotify Wrapped Duplicate')
+    logger.debug("Clearing session cache")
+    if 'uuid' in session:
+        cache_path = f".cache-{session['uuid']}"
+        if os.path.exists(cache_path):
+            os.remove(cache_path)
+    session.clear()
 
 @app.route("/login")
 def login():
+    logger.debug("Accessing login route")
     try:
         clear_session_cache()
         session['uuid'] = str(uuid.uuid4())
@@ -74,16 +77,15 @@ def login():
         auth_url = spotify_oauth.get_authorize_url()
         return redirect(auth_url)
     except Exception as e:
-        app.logger.error(f"Login error: {e}")
-        flash('An error occurred during login. Please try again.', 'error')
-        return redirect(url_for('index'))
+        logger.error(f"Error in login route: {str(e)}")
+        return str(e), 500
 
 @app.route('/redirectPage')
 def redirectPage():
+    logger.debug("Accessing redirect route")
     try:
         code = request.args.get('code')
         if not code:
-            flash('Authorization failed. Please try again.', 'error')
             return redirect(url_for('login'))
             
         spotify_oauth = create_spotify_oauth()
@@ -92,63 +94,60 @@ def redirectPage():
         session['uuid'] = str(uuid.uuid4())
         return redirect(url_for("receipt"))
     except Exception as e:
-        app.logger.error(f"Redirect error: {e}")
-        flash('Authentication failed. Please try again.', 'error')
-        return redirect(url_for('login'))
+        logger.error(f"Error in redirect route: {str(e)}")
+        return str(e), 500
 
 @app.route('/receipt')
 def receipt():
-    if 'uuid' not in session:
-        return redirect(url_for('login'))
-    
-    token_info = get_token()
-    if not token_info:
-        flash('Session expired. Please login again.', 'error')
-        return redirect(url_for('login'))
-        
+    logger.debug("Accessing receipt route")
     try:
+        if 'uuid' not in session:
+            return redirect(url_for('login'))
+        
+        token_info = get_token()
+        if not token_info:
+            return redirect(url_for('login'))
+            
         sp = spotipy.Spotify(auth=token_info['access_token'])
         current_user = sp.current_user()
         
-        top_tracks = {}
-        time_ranges = {
-            'short_term': 'Last 4 Weeks',
-            'medium_term': 'Last 6 Months',
-            'long_term': 'All Time'
-        }
+        short_term = sp.current_user_top_tracks(
+            limit=10,
+            offset=0,
+            time_range="short_term"
+        )
 
-        for time_range in time_ranges.keys():
-            top_tracks[time_range] = sp.current_user_top_tracks(
-                limit=10,
-                offset=0,
-                time_range=time_range
-            )
+        medium_term = sp.current_user_top_tracks(
+            limit=10,
+            offset=0,
+            time_range="medium_term"
+        )
+
+        long_term = sp.current_user_top_tracks(
+            limit=10,
+            offset=0,
+            time_range="long_term"
+        )       
         
         return render_template('receipt.html', 
-                             title='Your Spotify Stats',
+                             title='Your Spotify Receipt', 
                              username=current_user['display_name'],
-                             short_term=top_tracks['short_term'],
-                             medium_term=top_tracks['medium_term'],
-                             long_term=top_tracks['long_term'])
+                             short_term=short_term, 
+                             medium_term=medium_term, 
+                             long_term=long_term)
     except Exception as e:
-        app.logger.error(f"Error in receipt route: {e}")
-        flash('Failed to fetch your Spotify data. Please try again.', 'error')
-        clear_session_cache()
-        return redirect(url_for('login'))
+        logger.error(f"Error in receipt route: {str(e)}")
+        return str(e), 500
 
 @app.route('/logout')
 def logout():
-    clear_session_cache()
-    flash('Successfully logged out!', 'success')
-    return redirect(url_for('index'))
-
-@app.errorhandler(404)
-def not_found_error(error):
-    return render_template('404.html'), 404
-
-@app.errorhandler(500)
-def internal_error(error):
-    return render_template('500.html'), 500
+    logger.debug("Accessing logout route")
+    try:
+        clear_session_cache()
+        return redirect(url_for('index'))
+    except Exception as e:
+        logger.error(f"Error in logout route: {str(e)}")
+        return str(e), 500
 
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 5000))
