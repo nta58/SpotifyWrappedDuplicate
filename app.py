@@ -1,9 +1,6 @@
 from flask import Flask, request, url_for, session, redirect, render_template
 import spotipy
 from spotipy.oauth2 import SpotifyOAuth
-import time
-import uuid
-import os
 
 #DEFINING CONSTS
 TOKEN_INFO = "token_info"
@@ -36,39 +33,38 @@ def create_spotify_oauth():
         client_id=CLIENT_ID,
         client_secret=CLIENT_SECRET,
         redirect_uri=url_for("redirectPage", _external=True),
-        scope="user-top-read user-library-read",
-        show_dialog=True,
-        cache_handler=None  # Disable file caching completely
+        scope="user-top-read user-library-read"
     )
-        
-def clear_session_cache():
-    session.clear()
+
+app = Flask(__name__)
+#this is required for sessions to work
+app.secret_key = 'your-secret-key-here'
 
 @app.route("/")
 def index():
-    if TOKEN_INFO in session:
-        return redirect(url_for('receipt'))
-    return render_template('index.html', title='Welcome')
+    name = 'username'
+    return render_template('index.html', title='Welcome', username=name)
 
 @app.route("/login")
 def login():
-    if TOKEN_INFO in session:
-        return redirect(url_for('receipt'))
-        
-    spotify_oauth = create_spotify_oauth()
-    auth_url = spotify_oauth.get_authorize_url()
+    sp_oauth = create_spotify_oauth()
+    auth_url = sp_oauth.get_authorize_url()
     return redirect(auth_url)
 
 @app.route('/redirectPage')
 def redirectPage():
-    code = request.args.get('code')
-    if not code:
-        return redirect(url_for('login'))
-        
-    spotify_oauth = create_spotify_oauth()
-    token_info = spotify_oauth.get_access_token(code)
+    sp_oauth = create_spotify_oauth()
+    session.clear()
+    code = request.args.get('code') #redirectPage?code = TOKEN, returns TOKEN
+    token_info = sp_oauth.get_access_token(code)
     session[TOKEN_INFO] = token_info
-    return redirect(url_for("receipt"))
+    return redirect(url_for("receipt", _external=True))
+
+def get_token():
+    token_info = session.get(TOKEN_INFO, None)
+    if not token_info:
+        return None
+    return token_info
 
 @app.route('/receipt')
 def receipt():
@@ -109,13 +105,5 @@ def receipt():
                              long_term=long_term)
     except Exception as e:
         print(f"Error: {e}")
-        clear_session_cache()
-        return redirect(url_for('login'))
-
-@app.route('/logout') 
-def logout():
-    clear_session_cache()
-    return redirect(url_for('index'))
-
-if __name__ == '__main__':
-    app.run(debug=True)
+        # If there's any error with the token, redirect to login
+        session.clear()
