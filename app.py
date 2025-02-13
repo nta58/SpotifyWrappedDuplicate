@@ -112,7 +112,7 @@ def receipt():
         clear_session_cache()
         return redirect(url_for('login'))
 
-@app.route('/logout')
+@app.route('/logout') 
 def logout():
     clear_session_cache()
     return redirect(url_for('index'))
